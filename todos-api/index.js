@@ -1,37 +1,65 @@
 const express = require("express"); // importing express from third-party   npm express
 const app = express();
 
-app.get("/", function (req, res) {
-  res.send("Hello World");
-});
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://127.0.0.1:27017/b-j-todos')
+  .then(() => console.log('DB Connected!'))
+  .catch(err => {
+    console.log(err)
+  })
 
-app.get("/api/dashboard", function (req, res) {
-  let loggedIn = false;
 
-  if (!loggedIn) {
-    res.status(401).send({
-      msg: "unauthenticated.",
-    });
+const Todo = require("./model/Todo")
+
+
+app.use(express.json()) // glboal middleware
+
+app.post("/api/todos", async function (req, res) {
+
+  try {
+    console.log("req.body", req.body);
+
+    let todo = await Todo.create({ title: req.bod.title })
+    console.log(todo)
+    res.send(todo);
+
+  }
+  catch (err) {
+    res.status(500).send("server error")
   }
 
-  let data = {
-    total: 100,
-    completed: 10,
-  };
-
-  res.send(data);
 });
 
-app.get("/api/todos", function (req, res) {
-  let todos = ["react", "js", "css", "html", "express"];
+app.get("/api/todos", async function (req, res) {
+  let todos = await Todo.find()
   res.send(todos);
 });
 
-/*url: localhost:8000/ */
-/*url: localhost:8000/api/dashboard */
-/*url: localhost:8000/api/todos */
 app.listen(8000, () => {
   console.log("server started");
 });
 
-/* middleware  */
+
+
+/* todos: [ 
+    {title:"git"},
+    {title:"react"},
+    {name:"express"},
+  ] */
+
+/* products: [ 
+    {price:1000},
+    {rate:2000},
+    {name:"express"},
+  ] */
+
+
+/* product[0].price */
+/* product[1].price */
+
+/*
+  todos[0].title
+  todos[0].title
+  todos[2].title // undefined..
+ 
+*/
