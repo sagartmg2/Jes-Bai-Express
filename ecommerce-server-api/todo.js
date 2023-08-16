@@ -1,18 +1,14 @@
 /* 
 desired-output
 
-erros = [
+errors = [
     {
-        "value": "",
         "msg": "the field is required.",
         "param": "name",
-        "location": "body"
     },
     {
-        "value": "ord",
         "msg": "must be atleast 8 characters",
         "param": "password",
-        "location": "body"
     },
     
 ]
