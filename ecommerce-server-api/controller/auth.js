@@ -42,14 +42,15 @@ const login = async (req, res, next) => {
             }
         }
 
-        let user = await User.findOne({ email: req.body.email })
-        console.log(user);
+        let user = await User.findOne({ email: req.body.email }).select({ "+password": 1 })
 
         if (user) {
             let matched = await bcrypt.compare(req.body.password, user.password);
-            console.log({ matched })
+            user = user.toObject()
+            delete user.password
+
             if (matched) {
-                let token = jwt.sign(user.toObject(), 'shhhhh');
+                let token = jwt.sign(user, 'shhhhh');
                 return res.send({
                     user,
                     token
@@ -106,15 +107,28 @@ const signup = async (req, res, next) => {
             }
         }
 
+        // let oldUser = await User.findOne({ email: req.body.email }) // 
+        // if (oldUser) {
+        //     return res.status(400).send({
+        //         "msg": "Bad Request",
+        //         "errors": [
+        //             {
+        //                 "msg": "email already used",
+        //                 "params": "email"
+        //             }
+        //         ]
+        //     })
+        // }
 
         let hashedPassword = await bcrypt.hash(req.body.password, 10);
 
         console.log(hashedPassword);
         /* spread operator ... */
         let user = await User.create({ ...req.body, password: hashedPassword })
-        console.log(user);
-        res.send(user)
 
+        let userObj = user.toObject()
+        delete userObj.password
+        res.send(userObj)
 
     } catch (err) {
         next(err)

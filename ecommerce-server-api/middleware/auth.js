@@ -1,4 +1,5 @@
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const { SELLER, BUYER } = require("../constants/role");
 
 /* middleware  // a function which has access to req and response  and also next middleware*/
 const checkAuthentication = (req, res, next) => {
@@ -30,6 +31,28 @@ const checkAuthentication = (req, res, next) => {
     }
 }
 
+const isSeller = (req, res, next) => {
+
+    if (req.user.role === SELLER) {
+        next()
+    } else {
+        res.status(403).send({
+            msg: "Access Denied. only for seller."
+        })
+    }
+}
+
+const isBuyer = (req, res, next) => {
+    if (req.user.role === BUYER) {
+        next()
+    } else {
+        res.status(403).send({
+            msg: "Access Denied. only for seller."
+        })
+    }
+}
+
 module.exports = {
-    checkAuthentication
+    checkAuthentication,
+    isSeller
 }

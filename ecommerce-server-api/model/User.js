@@ -1,5 +1,6 @@
 
 const mongoose = require("mongoose");
+const { SELLER, BUYER } = require("../constants/role");
 
 const Schema = mongoose.Schema
 
@@ -10,16 +11,32 @@ const UserSchema = new Schema({
     },
     email: {
         type: String,
-        required: true
+        required: true,
+        /* custom validation */
+        validate: {
+            validator: async function (value) {
+                let oldUser = await mongoose.models.User.findOne({ email: value })
+                if (oldUser) {
+                    return false
+                }
+                return true
+            },
+            message: "email alreay used"
+        }
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        select: false
     },
     role: {
-        required:true,
+        required: true,
         type: String,
-        enum: ["seller", "buyer"]
+        set: function (value) {
+            console.log({ value })
+            return value.toLowerCase()
+        },
+        enum: [SELLER, BUYER]
     }
 });
 
