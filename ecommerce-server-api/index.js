@@ -11,8 +11,6 @@ app.use(express.json()) // global middleware // runs for every api routes // set
 app.use(authRoutes)
 app.use(productRoutes)
 
-
-
 app.use((req, res) => {
     res.status(404).send({ msg: "Resource Not found" })
 })
