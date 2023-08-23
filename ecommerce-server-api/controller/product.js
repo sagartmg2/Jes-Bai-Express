@@ -1,5 +1,6 @@
 const { default: mongoose } = require("mongoose")
 const Product = require("../model/Product")
+const path = require("path")
 
 const getProducts = async function (req, res, next) {
     try {
@@ -24,7 +25,7 @@ const getProducts = async function (req, res, next) {
                 { price: { $gte: priceFrom } },
                 { price: { $lte: priceTo } },
             ]
-        }, { description: 0 }).populate("createdBy","name email")
+        }, { description: 0 }).populate("createdBy", "name email")
 
         /* aggregate */
 
@@ -48,6 +49,21 @@ const getSingleProduct = async (req, res, next) => {
 }
 
 const storeProducts = async function (req, res, next) {
+
+    console.log("body", req.body)
+    console.log("files", req.files.image)
+    // console.log(path.resolve())
+
+    console.log(path.join(path.resolve(), "uploads"))
+    let destination = path.join(path.resolve(), "uploads")
+    destination = path.normalize(destination)
+
+    console.log(__dirname)
+    console.log(path.join(__dirname))
+
+    req.files.image.mv(path.join(__dirname))
+    return;
+
     try {
         console.log("req.user", req.user)
         let product = await Product.create({ ...req.body, createdBy: req.user._id })

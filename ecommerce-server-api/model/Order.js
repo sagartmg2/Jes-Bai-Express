@@ -27,25 +27,37 @@ const ObjectId = Schema.ObjectId;
 // ]
 
 const OrderSchema = new Schema({
-    products: [
-        {
-            name: {
-                type: String,
-                required: true,
-            },
-            quantity: {
-                type: Number,
-                required: true,
-                min: 1
-            },
-            price: {
-                type: Number,
-                require: true,
-                min: 0
+    products: {
+        type: [
+            {
+                title: {
+                    type: String,
+                    required: true,
+                },
+                quantity: {
+                    type: Number,
+                    required: true,
+                    min: 1
+                },
+                unitPrice: {
+                    type: Number,
+                    require: true,
+                    min: 0
+                }
             }
+        ],
+        validate: {
+            validator: function (products) {
+                if (products.length == 0) {
+                    return false
+                }
+            },
+            message: "atleast one product required.."
         }
-    ],
+
+    },
     createdBy: {
+        required: true,
         ref: "User",
         type: ObjectId,
     }

@@ -6,12 +6,12 @@ const checkAuthentication = (req, res, next) => {
 
     console.log("checking...")
     let token = req.headers.authorization?.replace("Bearer ", "")
-    console.log(token);
+    // console.log(token);
     let loggedIn = false
 
     try {
         var decoded = jwt.verify(token, 'shhhhh');
-        console.log(decoded);
+        // console.log(decoded);
         loggedIn = true
         req.user = decoded
 
@@ -47,12 +47,13 @@ const isBuyer = (req, res, next) => {
         next()
     } else {
         res.status(403).send({
-            msg: "Access Denied. only for seller."
+            msg: "Access Denied. only for buyer."
         })
     }
 }
 
 module.exports = {
     checkAuthentication,
-    isSeller
+    isSeller,
+    isBuyer
 }

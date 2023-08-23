@@ -14,9 +14,11 @@ const ProductSchema = new Schema({
     price: {
         type: Number,
         required: true,
-        min:0
+        min: 0
     },
     description: String,
+    image: String,
+    // "/uploads/mouse.png"
     createdBy: {
         ref: "User",
         type: ObjectId,
