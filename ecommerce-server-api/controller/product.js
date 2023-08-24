@@ -10,6 +10,8 @@ const getProducts = async function (req, res, next) {
         const searchTerm = req.query.searchTerm || ""
         const priceFrom = parseFloat(req.query.priceFrom) || 0
         const priceTo = parseFloat(req.query.priceTo) || 999999999999999
+        const perPage = parseInt(req.query.perPage) || 2
+        const page = parseInt(req.query.page) || 1
         console.log({ searchTerm })
 
 
@@ -19,17 +21,27 @@ const getProducts = async function (req, res, next) {
 
         // find(filters,select)
 
-        let products = await Product.find({
+        let filterOptions = {
             $and: [
                 { title: RegExp(searchTerm, "i") },
                 { price: { $gte: priceFrom } },
                 { price: { $lte: priceTo } },
             ]
-        }, { description: 0 }).populate("createdBy", "name email")
+        }
 
-        /* aggregate */
+        let total = await Product.find(filterOptions)
+        // total = total.length
+        let products = await Product.find(filterOptions, { description: 0 }).populate("createdBy", "name email")
+            .skip((page - 1) * perPage)
+            .limit(perPage)
 
-        res.send(products)
+
+        res.send({
+            total,
+            page,
+            perPage,
+            products
+        })
 
 
     } catch (err) {
@@ -54,19 +66,12 @@ const storeProducts = async function (req, res, next) {
     console.log("files", req.files.image)
     // console.log(path.resolve())
 
-    console.log(path.join(path.resolve(), "uploads"))
-    let destination = path.join(path.resolve(), "uploads")
-    destination = path.normalize(destination)
+    let destination = path.join(path.resolve(), "uploads", req.files.image.name)
 
-    console.log(__dirname)
-    console.log(path.join(__dirname))
-
-    req.files.image.mv(path.join(__dirname))
-    return;
+    req.files.image.mv(destination)
 
     try {
-        console.log("req.user", req.user)
-        let product = await Product.create({ ...req.body, createdBy: req.user._id })
+        let product = await Product.create({ ...req.body, createdBy: req.user._id, image: req.files.image.name })
         res.send(product)
     } catch (err) {
         next(err)

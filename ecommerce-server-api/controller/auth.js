@@ -50,7 +50,7 @@ const login = async (req, res, next) => {
             delete user.password
 
             if (matched) {
-                let token = jwt.sign(user, 'shhhhh');
+                let token = jwt.sign(user, 'shhhhh',{ expiresIn: "7d" });
                 return res.send({
                     user,
                     token

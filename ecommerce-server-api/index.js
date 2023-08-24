@@ -7,6 +7,7 @@ const orderRoutes = require("./routes/order")
 const fileUpload = require("express-fileupload")
 
 const app = express()
+app.use(express.static('uploads'))
 
 app.use(express.json()) // global middleware // runs for every api routes // sets-up data in req.body
 app.use(fileUpload())
